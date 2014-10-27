@@ -1,4 +1,4 @@
-package ou.web.controller;
+package aries.web;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,8 +24,6 @@ public class DemoController {
         mv.addObject("msg","你好，"+name);
         mv.setViewName("index");
 
-        LOGGER.debug(mv.getModel().get("msg").toString());
-
         return mv;
     }
 
@@ -43,6 +41,4 @@ public class DemoController {
         mv.setViewName("login");
         return mv;
     }
-
-    //public Response
 }

@@ -20,6 +20,8 @@
         <param-value>classpath:config/logback.xml</param-value>
         <!-- classpath是指 WEB-INF文件夹下的classes目录  -->
     </context-param>
+
+    <!--监听logback.xml的改动，无需重启服务-->
     <listener>
         <listener-class>ch.qos.logback.ext.spring.web.LogbackConfigListener</listener-class>
     </listener>
