@@ -6,10 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Created by Ouyang on 2014/10/24.
+ * Created by Ouyang on 2014/10/28.
  */
 public class ControllerAspect {
-
     private static Logger LOGGER = LoggerFactory.getLogger(ControllerAspect.class);
 
     public void around(ProceedingJoinPoint joinPoint) throws Throwable {
