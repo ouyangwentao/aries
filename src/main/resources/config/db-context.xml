@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:context="http://www.springframework.org/schema/context"
+             xmlns:tx="http://www.springframework.org/schema/tx"
+             xmlns:aop="http://www.springframework.org/schema/aop"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-4.1.xsd
+		http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
+	    http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop-4.1.xsd">
+
+    <context:property-placeholder location="classpath:config/jdbc.properties"
+                                  ignore-unresolvable="true"/>
+
+    <beans:bean id="parentDataSource" class="org.apache.commons.dbcp.BasicDataSource"
+                destroy-method="close">
+
+        <beans:property name="initialSize" value="${db.initialSize}"/>
+        <beans:property name="maxActive" value="${db.maxActive}"/>
+        <beans:property name="maxIdle" value="${db.maxIdle}"/>
+        <beans:property name="minIdle" value="${db.minIdle}"/>
+        <beans:property name="logAbandoned" value="${db.logAbandoned}"/>
+        <beans:property name="removeAbandoned"
+                        value="${db.removeAbandoned}"/>
+        <beans:property name="removeAbandonedTimeout"
+                        value="${db.removeAbandonedTimeout}"/>
+        <beans:property name="maxWait" value="${db.maxWait}"/>
+        <beans:property name="validationQuery"
+                        value="${db.validationQuery}"/>
+        <beans:property name="testOnBorrow" value="${db.testOnBorrow}"/>
+        <beans:property name="testWhileIdle" value="${db.testWhileIdle}"/>
+        <beans:property name="timeBetweenEvictionRunsMillis"
+                        value="${db.timeBetweenEvictionRunsMillis}"/>
+        <beans:property name="minEvictableIdleTimeMillis"
+                        value="${db.minEvictableIdleTimeMillis}"/>
+    </beans:bean>
+
+    <beans:bean id="mobilebusi_DBSource" parent="parentDataSource">
+        <beans:property name="driverClassName"
+                        value="${db_mobilebusi.driverClassName}" />
+        <beans:property name="url" value="${db_mobilebusi.jdbcUrl}"/>
+        <beans:property name="username" value="${db_mobilebusi.user}"/>
+        <beans:property name="password" value="${db_mobilebusi.pass}"/>
+    </beans:bean>
+
+    <beans:bean id="mobizdb_DBSource" parent="parentDataSource">
+        <beans:property name="driverClassName"
+                        value="${db_mobizdb.driverClassName}" />
+        <beans:property name="url" value="${db_mobizdb.jdbcUrl}"/>
+        <beans:property name="username" value="${db_mobizdb.user}"/>
+        <beans:property name="password" value="${db_mobizdb.pass}"/>
+    </beans:bean>
+
+    <beans:bean id="dataSource" class="aries.dao.db.ManyDBSources">
+        <property name="targetDataSources">
+            <map key-type="java.lang.String">
+                <entry key="db_mobilebusi" value-ref="mobilebusi_DBSource" />
+                <entry key="db_mobizdb" value-ref="mobizdb_DBSource" />
+            </map>
+        </property>
+        <property name="defaultTargetDataSource" ref="mobilebusi_DBSource" />
+    </beans:bean>
+
+    <beans:bean id="sqlSessionFactory" name="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <beans:property name="dataSource" ref="dataSource" />
+        <beans:property name="mapperLocations" value="classpath:config/mapper/*.xml" />
+    </beans:bean>
+
+    <beans:bean id="transactionManager"
+                class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <beans:property name="dataSource" ref="dataSource" />
+    </beans:bean>
+    <tx:annotation-driven transaction-manager="transactionManager" />
+
+    <beans:bean id="grscanner" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+        <beans:property name="basePackage" value="ou.common.dao.mapper" />
+    </beans:bean>
+
+    <!-- 配置Mapper注解aop -->
+    <beans:bean id="manyDataSourceAspect"
+                class="aries.dao.db.ManyDBSourceAspect" />
+    <aop:config>
+        <aop:aspect id="b" ref="manyDataSourceAspect">
+            <aop:pointcut id="tx"
+                          expression="execution(* aries.dao.mapper.*.*(..))" />
+            <aop:before pointcut-ref="tx" method="before" />
+        </aop:aspect>
+    </aop:config>
+</beans:beans>
