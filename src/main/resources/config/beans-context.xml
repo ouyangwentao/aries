@@ -15,13 +15,12 @@
     	http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
     <!-- 自动扫描的包名 -->
-    <context:component-scan
-            base-package="aries.web.**,aries.dao.mapper.**"></context:component-scan>
+    <context:component-scan base-package="aries.web"></context:component-scan>
 
     <!-- 默认的注解映射的支持 -->
     <mvc:annotation-driven/>
     <context:annotation-config/>
-    <aop:aspectj-autoproxy />
+    <aop:aspectj-autoproxy/>
 
     <mvc:resources location="/resources/fonts/" mapping="/fonts/**"/>
     <mvc:resources location="/resources/js/" mapping="/js/**"/>
@@ -34,13 +33,13 @@
         <beans:property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
     </beans:bean>
 
-    <beans:bean id = "cAspect" class="aries.aspect.ControllerAspect" />
+    <beans:bean id="cAspect" class="aries.aspect.ControllerAspect"/>
 
     <aop:config>
-        <aop:aspect ref = "cAspect">
-            <aop:pointcut id="action" expression="execution(* aries.web.DemoController.*(..))" />
+        <aop:aspect ref="cAspect">
+            <aop:pointcut id="action" expression="execution(* aries.web.DemoController.*(..))"/>
             <aop:around method="around" pointcut-ref="action"/>
-            <aop:before method="before" pointcut-ref="action" />
+            <aop:before method="before" pointcut-ref="action"/>
         </aop:aspect>
     </aop:config>
 </beans:beans>

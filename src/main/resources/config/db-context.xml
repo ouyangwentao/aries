@@ -14,6 +14,7 @@
 	    http://www.springframework.org/schema/aop
 		http://www.springframework.org/schema/aop/spring-aop-4.1.xsd">
 
+    <context:component-scan base-package="aries.dao.mapper"></context:component-scan>
     <context:property-placeholder location="classpath:config/jdbc.properties"
                                   ignore-unresolvable="true"/>
 
@@ -79,7 +80,7 @@
 
     <beans:bean id="grscanner" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
-        <beans:property name="basePackage" value="ou.common.dao.mapper" />
+        <beans:property name="basePackage" value="aries.dao.mapper" />
     </beans:bean>
 
     <!-- 配置Mapper注解aop -->
